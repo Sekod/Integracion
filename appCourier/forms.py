@@ -1,11 +1,15 @@
 from django import forms
-from .models import Solicitud, Usuario
+from .models import Solicitud
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+
+
 class SolicitudForm(forms.ModelForm):
+	
     class Meta:
         model = Solicitud
         fields = ['codigo', 'nombre', 'direccion_origen', 'direccion_destino', 'estado','precio']
+        
 
 
 
@@ -18,3 +22,4 @@ class UserRegisterForm(UserCreationForm):
 		model = User
 		fields = ['username', 'email', 'password1', 'password2']
 		help_texts = {k:"" for k in fields }
+                

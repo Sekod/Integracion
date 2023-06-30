@@ -6,3 +6,4 @@ class SolicitudSerializer(serializers.ModelSerializer):
         model = Solicitud
         fields = '__all__'
         
+        

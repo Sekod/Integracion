@@ -2,12 +2,13 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import Solicitud, Usuario
 from .forms import SolicitudForm , UserRegisterForm
 import requests
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
 from .serializers import SolicitudSerializer
 from django.contrib.auth import authenticate, login, logout
 from rest_framework import generics
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from rest_framework.generics import RetrieveUpdateAPIView
 
 #---------------------------------Metodos crud---------------------------------------
 @login_required
@@ -38,6 +39,8 @@ def editar_solicitud(request, pk):
         if form.is_valid():
             solicitud = form.save()# Actualiza la instancia existente en lugar de crear una nueva
             return redirect('detalle_solicitud', pk=solicitud.pk)
+        else:
+            return HttpResponseBadRequest('Formulario inválido')
     else:
         form = SolicitudForm(instance=solicitud)
     return render(request, 'appCourier/editar_solicitud.html', {'form': form, 'solicitud': solicitud})
@@ -108,9 +111,10 @@ class SolicitudListView(generics.ListCreateAPIView):
     queryset = Solicitud.objects.all()
     serializer_class = SolicitudSerializer
 
-class SolicitudDetailView(generics.RetrieveUpdateDestroyAPIView):
+class SolicitudDetailView(RetrieveUpdateAPIView):
     queryset = Solicitud.objects.all()
     serializer_class = SolicitudSerializer
+    lookup_field = 'codigo'
     
 """INTENTO COMBO BOX EDITAR"""
 def guardar_valores(request):
@@ -134,7 +138,7 @@ def register(request):
 			form.save()
 			username = form.cleaned_data['username']
 			messages.success(request, f'Usuario {username} creado')
-			return redirect('../solicitudes/')
+			return redirect('../login/')
 	else:
 		form = UserRegisterForm()
 
